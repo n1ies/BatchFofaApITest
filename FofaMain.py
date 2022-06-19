@@ -23,8 +23,6 @@ def jointUrl(email, key, base64Content, size):
     r = requests.get(
         'https://fofa.info/api/v1/search/all?email={0}&key={1}&qbase64={2}&size={3}'
             .format(email, key, base64Content, size))
-    url = r.url
-    print(url)
     content = r.content
     return content
 
@@ -36,10 +34,7 @@ def query(email, key, query):
 
 
 def parse_json(args):
-    str1 = args.QUERY
-    print(str1)
     str = query(args.EMAIL, args.KEY, args.QUERY).decode(encoding='utf-8')
-    print(str)
     dicts = json.loads(str)
     path = os.getcwd() + '/output'
     if not os.path.exists(path):
@@ -60,5 +55,4 @@ _OPTIONS_HELP_ = {
 }
 
 if __name__ == '__main__':
-    print(parse_commond())
     parse_json(parse_commond())
