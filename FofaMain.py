@@ -3,6 +3,7 @@ import argparse
 import base64
 import json
 import os
+import sys
 from shlex import join
 
 import requests
@@ -55,4 +56,7 @@ _OPTIONS_HELP_ = {
 }
 
 if __name__ == '__main__':
-    parse_json(parse_commond())
+    if len(sys.argv) < 3:
+        print(_OPTIONS_HELP_)
+    else:
+        parse_json(parse_commond())
