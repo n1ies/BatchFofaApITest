@@ -4,12 +4,13 @@ import base64
 import json
 import os
 import sys
-from shlex import join
 
+import xlwt
 import requests
 
+WRITE_BOOK = None
 
-# 解析参数
+
 def parse_commond():
     parse = argparse.ArgumentParser()
     target = parse.add_argument_group('target')
@@ -24,6 +25,7 @@ def jointUrl(email, key, base64Content, size):
     r = requests.get(
         'https://fofa.info/api/v1/search/all?email={0}&key={1}&qbase64={2}&size={3}'
             .format(email, key, base64Content, size))
+    print(r.url)
     content = r.content
     return content
 
@@ -34,18 +36,23 @@ def query(email, key, query):
                     bytes.decode(base64.b64encode(query.encode(encoding='utf-8'))), 10000)
 
 
-def parse_json(args):
+def parse_json(args, NUM=0):
+    write_book = xlwt.Workbook()
     str = query(args.EMAIL, args.KEY, args.QUERY).decode(encoding='utf-8')
     dicts = json.loads(str)
+    print(dicts)
     path = os.getcwd() + '/output'
     if not os.path.exists(path):
         os.mkdir(os.getcwd() + '/output')
-    f = open(os.getcwd() + '/output/test.txt', 'w')
+    write_sheet = xlwt.Workbook.add_sheet(write_book, sheetname="fofa")
+    write_sheet.write(0, 0, "域名")
+    write_sheet.write(0, 1, "IP")
+    write_sheet.write(0, 2, "port")
     for i in dicts['results']:
-        f.write(join(i))
-        f.write("\r\n")
-
-    f.close()
+        NUM = NUM + 1
+        for index in range(len(i)):
+            write_sheet.write(NUM, index, i[index])
+    write_book.save(filename_or_stream='output/fofa.xls')
 
 
 # 帮助选项
@@ -56,6 +63,7 @@ _OPTIONS_HELP_ = {
 }
 
 if __name__ == '__main__':
+
     if len(sys.argv) < 3:
         print(_OPTIONS_HELP_)
     else:
